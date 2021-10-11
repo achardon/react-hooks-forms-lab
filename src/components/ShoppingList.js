@@ -2,32 +2,20 @@ import React, { useState } from "react";
 import ItemForm from "./ItemForm";
 import Filter from "./Filter";
 import Item from "./Item";
-import { v4 as uuid } from "uuid";
 
-
-function ShoppingList({ items }) {
+function ShoppingList({ items, setItems }) {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchContent, setSearch] = useState('')
-  const [newItem, setNewItem] = useState({
-    id: '',
-    name: '',
-    category: 'Produce'
-  })
-  const [newItemsArray, setItems] = useState(items)
-
-  console.log('newItem', newItem)
-  console.log('newItemArray', newItemsArray)
 
   function handleCategoryChange(event) {
     setSelectedCategory(event.target.value);
   }
 
   function handleSearchChange(event) {
-    // console.log(event.target.value)
     setSearch(event.target.value)
   }
 
-  const itemsToDisplay = newItemsArray.filter((item) => {
+  const itemsToDisplay = items.filter((item) => {
     if (selectedCategory === "All") return true;
 
     return item.category === selectedCategory;
@@ -39,34 +27,18 @@ function ShoppingList({ items }) {
   }
   else if (searchContent !== '') {
     searchedItems = itemsToDisplay.filter((item) => {
-      if (item.name.includes(searchContent) || item.name.toLowerCase().includes(searchContent)) {
-        //console.log(item.name.toLowerCase())
-        return item
-      }
+      return item.name.includes(searchContent) || item.name.toLowerCase().includes(searchContent)
     })
-  };
-  //console.log(searchContent === '')
-  //console.log(searchedItems)
-
-  function handleSubmit(event) {
-    event.preventDefault()
-    console.log(event.target.name.value, event.target.category.value)
-    setNewItem({
-      id: uuid(),
-      name: event.target.name.value,
-      category: event.target.category.value
-    })
-    setItems([...newItemsArray, newItem])
   }
 
-  //The previous item is added when I try to add a second item, but the current item first registers as blank. Why?
+  function onItemFormSubmit(newItem) {
+    setItems([...items, newItem])
+  }
 
   return (
     <div className="ShoppingList">
       <ItemForm 
-      onItemFormSubmit={handleSubmit}
-      newItem={newItem}
-      setNewItem={setNewItem}
+      onItemFormSubmit={onItemFormSubmit}
       />
       <Filter 
       onCategoryChange={handleCategoryChange} 
